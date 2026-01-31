@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth/auth-client";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -17,6 +20,7 @@ import { Loader2, Eye, EyeOff, Github } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,16 +34,22 @@ export default function LoginPage() {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    // Simulate login
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const { data, error } = await authClient.signIn.email({
+      email,
+      password,
+      callbackURL: "/dashboard",
+    });
+
     setIsLoading(false);
 
-    // Example error state for specific testing
-    if (email === "error@example.com") {
-      setError("Invalid credentials. Please check your email and password.");
-    } else if (email === "verify@example.com") {
-      setError("Email not verified. Please verify your email to continue.");
+    if (error) {
+      setError(error.message || "Invalid credentials");
+      toast.error(error.message || "Sign in failed");
+      return;
     }
+
+    toast.success("Welcome back!");
+    router.push("/dashboard");
   }
 
   return (
@@ -106,7 +116,7 @@ export default function LoginPage() {
                     Password
                   </Label>
                   <Link
-                    href="/forgot-password"
+                    href="/auth/forgot-password"
                     className="text-xs text-primary/80 hover:text-primary transition-colors underline-offset-4 hover:underline"
                   >
                     Forgot password?
@@ -204,7 +214,7 @@ export default function LoginPage() {
             <div className="text-center text-sm text-muted-foreground font-medium">
               New to InteliPipe?{" "}
               <Link
-                href="/signup"
+                href="/auth/signup"
                 className="font-semibold text-primary hover:text-primary transition-colors underline-offset-4 hover:underline"
               >
                 Create account
@@ -214,7 +224,7 @@ export default function LoginPage() {
         </Card>
         <div className="text-center">
           <Link
-            href="/verify-email"
+            href="/auth/verify-email"
             className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors"
           >
             Didn&apos;t receive a code?{" "}

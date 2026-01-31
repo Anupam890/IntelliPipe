@@ -1,10 +1,12 @@
 import { betterAuth } from "better-auth";
 import bcrypt from "bcrypt";
 
-// Note: In a real app, you'd implement a full Snowflake adapter here.
-// For now, we're setting up the structure.
 export const auth = betterAuth({
-  // adapter: snowflakeAdapter, // FIXME: Implement Snowflake adapter
+  // adapter: snowflakeAdapter, // FIXME: In a real project, implement the snowflake adapter
+
+  emailAndPassword: {
+    enabled: true,
+  },
 
   password: {
     hash: async (password: string) => {
@@ -15,8 +17,14 @@ export const auth = betterAuth({
     },
   },
 
-  emailAndPassword: {
-    enabled: true,
+  emailVerification: {
+    sendOnSignUp: true,
+    sendVerificationEmail: async ({ user, url, token }) => {
+      // Mock sending verification email
+      console.log(
+        `Sending verification email to ${user.email} with URL: ${url}`,
+      );
+    },
   },
 
   session: {

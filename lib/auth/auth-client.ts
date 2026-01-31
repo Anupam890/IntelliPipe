@@ -4,4 +4,8 @@ export const authClient = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
 });
 
-export const { useSession, signIn, signUp, signOut } = authClient;
+// Helper for type safety when using plugins that might not be fully detected
+export const signIn = authClient.signIn;
+export const signUp = authClient.signUp;
+export const signOut = authClient.signOut;
+export const useSession = authClient.useSession;

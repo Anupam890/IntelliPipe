@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/input-otp";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { authClient } from "@/lib/auth/auth-client";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -47,11 +48,20 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    // Simulate reset
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    const { data, error } = await (authClient as any).resetPassword({
+      newPassword: password,
+      token: otp,
+    });
+
     setIsLoading(false);
+
+    if (error) {
+      toast.error(error.message || "Failed to reset password");
+      return;
+    }
+
     toast.success("Password reset successfully");
-    router.push("/login");
+    router.push("/auth/login");
   }
 
   return (
@@ -166,7 +176,7 @@ export default function ResetPasswordPage() {
             <div className="text-center text-sm text-muted-foreground font-medium">
               Remember your password?{" "}
               <Link
-                href="/login"
+                href="/auth/login"
                 className="font-semibold text-primary hover:text-primary transition-colors underline-offset-4 hover:underline"
               >
                 Sign in

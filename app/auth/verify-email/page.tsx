@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth/auth-client";
 import {
   Card,
   CardContent,
@@ -66,16 +67,22 @@ export default function VerifyEmailPage() {
     setIsLoading(true);
     setError(null);
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const { data, error } = await (authClient as any).verifyEmail({
+      query: {
+        token: otp,
+      },
+    });
+
     setIsLoading(false);
 
-    if (otp === "123456") {
-      toast.success("Email verified successfully!");
-      // router.push("/dashboard");
-    } else {
-      setError("Invalid or expired code. Please try again.");
+    if (error) {
+      setError(error.message || "Invalid or expired code. Please try again.");
       toast.error("Verification failed");
+      return;
     }
+
+    toast.success("Email verified successfully!");
+    router.push("/dashboard");
   }
 
   async function onResend() {
@@ -178,7 +185,7 @@ export default function VerifyEmailPage() {
         </Card>
         <div className="text-center">
           <Link
-            href="/login"
+            href="/auth/login"
             className="flex items-center justify-center gap-2 text-sm font-semibold text-muted-foreground hover:text-primary transition-colors hover:underline underline-offset-4"
           >
             <ArrowLeft size={16} />
