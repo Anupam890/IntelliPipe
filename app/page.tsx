@@ -155,12 +155,12 @@ export default function HomePage() {
 
           <div className="flex items-center gap-4">
             <Link
-              href="/login"
+              href="/auth/login"
               className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
             >
               Login
             </Link>
-            <Link href="/signup">
+            <Link href="/auth/signup">
               <button className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95">
                 Get Started
               </button>
@@ -199,7 +199,7 @@ export default function HomePage() {
                   Clean data, automated flows, and real-time monitoring.
                 </p>
                 <div className="mt-10 flex flex-wrap gap-4">
-                  <Link href="/signup">
+                  <Link href="/auth/signup">
                     <button className="flex items-center gap-2 rounded-full bg-primary px-8 py-4 text-base font-bold text-primary-foreground shadow-xl shadow-primary/25 hover:bg-primary/90 transition-all hover:translate-y-[-2px]">
                       Start Free <ArrowRight size={18} />
                     </button>

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth/auth-client";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -65,12 +67,23 @@ export default function SignupPage() {
       return;
     }
 
-    // Simulate signup
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    const { data, error } = await authClient.signUp.email({
+      email,
+      password,
+      name,
+      callbackURL: "/auth/verify-email",
+    });
+
     setIsLoading(false);
 
-    // Redirect to verify email
-    router.push("/verify-email");
+    if (error) {
+      setError(error.message || "An error occurred during sign up");
+      toast.error(error.message || "Sign up failed");
+      return;
+    }
+
+    toast.success("Account created! Please verify your email.");
+    router.push("/auth/verify-email");
   }
 
   return (
@@ -285,7 +298,7 @@ export default function SignupPage() {
             <div className="text-sm text-muted-foreground font-medium">
               Already have an account?{" "}
               <Link
-                href="/login"
+                href="/auth/login"
                 className="font-semibold text-primary hover:text-primary transition-colors underline-offset-4 hover:underline"
               >
                 Sign in

@@ -16,6 +16,7 @@ import {
 import { Loader2, ArrowLeft, MailCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { authClient } from "@/lib/auth/auth-client";
 
 export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -25,9 +26,21 @@ export default function ForgotPasswordPage() {
     event.preventDefault();
     setIsLoading(true);
 
-    // Simulate sending reset link
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const email = (
+      event.currentTarget.elements.namedItem("email") as HTMLInputElement
+    ).value;
+    const { data, error } = await (authClient as any).forgetPassword({
+      email,
+      redirectTo: "/auth/reset-password",
+    });
+
     setIsLoading(false);
+
+    if (error) {
+      toast.error(error.message || "Something went wrong.");
+      return;
+    }
+
     setIsSent(true);
     toast.success("Reset link sent successfully");
   }
@@ -125,7 +138,7 @@ export default function ForgotPasswordPage() {
           </CardContent>
           <CardFooter className="flex flex-col gap-4 border-t border-border/40 bg-white/5 py-4">
             <Link
-              href="/login"
+              href="/auth/login"
               className="flex items-center justify-center gap-2 text-sm font-semibold text-muted-foreground hover:text-primary transition-colors hover:underline underline-offset-4"
             >
               <ArrowLeft size={16} />
