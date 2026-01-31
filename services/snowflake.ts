@@ -1,16 +1,19 @@
-import { createConnection } from "snowflake-sdk";
+import snowflake from "snowflake-sdk";
 
-const snowflakeConnection = createConnection({
-  account: "your_account",
-  username: "your_username",
-  password: "your_password",
+export const snowflakeConnection = snowflake.createConnection({
+  account: process.env.SNOWFLAKE_ACCOUNT!,
+  username: process.env.SNOWFLAKE_USERNAME!,
+  privateKey: process.env.SNOWFLAKE_PRIVATE_KEY!,
+  warehouse: process.env.SNOWFLAKE_WAREHOUSE!,
+  database: process.env.SNOWFLAKE_DATABASE!,
+  schema: process.env.SNOWFLAKE_SCHEMA!,
 });
 
-snowflakeConnection.connect((err, conn) => {
-  if (err) {
-    console.error(err);
-    return;
-  }
-
-  console.log("Connected to Snowflake");
-});
+export function connectSnowflake() {
+  return new Promise<void>((resolve, reject) => {
+    snowflakeConnection.connect((err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+}
